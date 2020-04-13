@@ -1,58 +1,57 @@
 # Elevation service
 
-[![CircleCI](https://circleci.com/gh/racemap/elevation-service.svg?style=svg)](https://circleci.com/gh/racemap/elevation-service)
+Self-hosted elevation service that works with the [terrain data provided by Mapzen and Amazon AWS S3](https://registry.opendata.aws/terrain-tiles/).
 
-Self-hosted elevation service that works with the [terrain data provided by Mapzen and Amazon AWS S3](https://registry.opendata.aws/terrain-tiles/). You can either pre-download the entire data on your server (ca. 200 GB) or access directly on S3 (for minimal latency from `us-east-1` region).
+## TL;DR
 
-Try it out with our hosted service: https://elevation.racemap.com/api
+```bash
+cp keys_example.js keys.js
+hash=$(echo -n MY_API_KEY | sha256sum | awk '{print $1}')
+sed -i "s/API_KEY_1/$hash/g" keys.js
 
-Inspired by:
-
-- https://github.com/perliedman/elevation-service
-- https://github.com/perliedman/node-hgt
+yarn install
+yarn run test
+yarn run start
+```
 
 ## API usage
 
-!!! This fork REQUIRE an api key for each request with a parameter ?key=APIKEYGOESHERE
-Rename existing keys_example.js file, place it in your /etc/keys.js and store properly hashed (sha256 hex format) keys inside the file !!!
+### Keys
 
-The service has a very simple API. Just post your latitude-longitude pairs as a JSON array to the service and receive an array of elevations as response. Maximum post payload is by default 700 KB (which fits roughly 10,000 points).
+This service requires an API key to answer requests. To set up keys, copy `keys_example.js` as `keys.js`, and add the hash of your keys to the authorized keys array. To generate the hash of your personal key, run
 
 ```bash
-# > [[lat, lng], ...]
-curl -d '[[51.3, 13.4], [51.4, 13.3]]' -XPOST -H 'Content-Type: application/json' http://localhost:3000
-# < [ele, ...]
+echo -n your-key | sha256sum
 ```
 
-For one-off queries. You can also issue GET requests with latitude and longitude as query parameters.
+### Array of coordinates
 
 ```bash
-curl 'http://localhost:3000/?lat=51.3&lng=13.4'
+# > [[lat_1, lon_1], [lat_2, lon_2], ...]
+# < [alt_1, alt_2, ...]
+curl -d '[[51.3, 13.4], [51.4, 13.3]]' -XPOST -H 'Content-Type: application/json' -L "localhost:4000?key=MY_API_KEY"
+```
+
+### Single coordinate
+
+```bash
+curl 'localhost:4000?lat=51.3&lon=13.4'
 # < ele
 ```
 
-## Usage with pre-downloaded data
+Run the docker container:
 
-Download data (ca. 200 GB):
+```bash
+docer build -t elevation-service .
+docker run --rm -v/path/to/data/folder:/app/data -4000:4000 elevation-service
+```
+
+## Download data
 
 ```bash
 aws s3 cp --no-sign-request --recursive s3://elevation-tiles-prod/skadi /path/to/data/folder
 ```
 
-Run the docker container:
+## Acknowledgements
 
-```bash
-docker run --rm -v/path/to/data/folder:/app/data -p3000:3000 racemap/elevation-service
-```
-
-## Usage with S3-hosted data
-
-Run the docker container:
-
-```bash
-docker run --rm -eTILE_SET_PATH=s3:// -p3000:3000 racemap/elevation-service
-```
-
-## License
-
-MIT
+This service was forked from [racemap/elevation-service](https://github.com/racemap/elevation-service).
