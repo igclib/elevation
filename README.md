@@ -6,8 +6,8 @@ Self-hosted elevation service that works with the [terrain data provided by Mapz
 
 ```bash
 cp keys_example.js keys.js
-hash=$(echo -n MY_API_KEY | sha256sum | awk '{print $1}')
-sed -i "s/API_KEY_1/$hash/g" keys.js
+HASH=$(echo -n MY_API_KEY | sha256sum | awk '{print $1}')
+sed -i "s/API_KEY_1/$HASH/g" keys.js
 
 yarn install
 yarn run test
@@ -21,22 +21,22 @@ yarn run start
 This service requires an API key to answer requests. To set up keys, copy `keys_example.js` as `keys.js`, and add the hash of your keys to the authorized keys array. To generate the hash of your personal key, run
 
 ```bash
-echo -n your-key | sha256sum
+echo -n MY_API_KEY | sha256sum
 ```
 
 ### Array of coordinates
 
 ```bash
 # > [[lat_1, lon_1], [lat_2, lon_2], ...]
-# < [alt_1, alt_2, ...]
 curl -d '[[51.3, 13.4], [51.4, 13.3]]' -XPOST -H 'Content-Type: application/json' -L "localhost:4000?key=MY_API_KEY"
+# < [alt_1, alt_2, ...]
 ```
 
 ### Single coordinate
 
 ```bash
-curl 'localhost:4000?lat=51.3&lon=13.4'
-# < ele
+curl 'localhost:4000?key=MY_API_KEY&lat=51.3&lon=13.4'
+# < alt
 ```
 
 Run the docker container:
