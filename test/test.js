@@ -5,8 +5,8 @@ const {FileTileSet} = require('../tileset');
 (async function() {
   const tileset = new FileTileSet(__dirname);
 
-  const testLatLng = [51.3, 13.4];
-  const result = await tileset.getElevation(testLatLng)
+  const testLatLon = [51.3, 13.4];
+  const result = await tileset.getElevation(testLatLon)
 
   console.log(result);
   assert(101, result);

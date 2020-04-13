@@ -10,8 +10,8 @@ HASH=$(echo -n MY_API_KEY | sha256sum | awk '{print $1}')
 sed -i "s/API_KEY_1/$HASH/g" keys.js
 
 yarn install
-yarn run test
-yarn run start
+yarn test
+yarn start
 ```
 
 ## API usage

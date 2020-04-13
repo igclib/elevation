@@ -20,9 +20,9 @@ function bufferStream(stream) {
 }
 
 class HGT {
-  constructor(buffer, swLatLng, options) {
+  constructor(buffer, swLatLon, options) {
     this._buffer = buffer;
-    this._swLatLng = swLatLng;
+    this._swLatLon = swLatLon;
 
     this.options = Object.assign({}, {interpolation: HGT.bilinear}, options);
 
@@ -38,14 +38,14 @@ class HGT {
     }
   }
 
-  static async loadFile(path, swLatLng, options) {
+  static async loadFile(path, swLatLon, options) {
     const buffer = await asyncReadFile(path);
-    return new HGT(buffer, swLatLng, options);
+    return new HGT(buffer, swLatLon, options);
   }
 
-  static async loadStream(stream, swLatLng, options) {
+  static async loadStream(stream, swLatLon, options) {
     const buffer = await bufferStream(stream);
-    return new HGT(buffer, swLatLng, options);
+    return new HGT(buffer, swLatLon, options);
   }
 
   static nearestNeighbour(row, col) {
@@ -84,11 +84,11 @@ class HGT {
     return avg(v1, v2, rowFrac);
   }
 
-  getElevation(latLng) {
+  getElevation(latLon) {
     const size = this._size - 1;
-    const ll = latLng;
-    const row = (ll[0] - this._swLatLng[0]) * size;
-    const col = (ll[1] - this._swLatLng[1]) * size;
+    const ll = latLon;
+    const row = (ll[0] - this._swLatLon[0]) * size;
+    const col = (ll[1] - this._swLatLon[1]) * size;
 
     if (row < 0 || col < 0 || row > size || col > size) {
       throw new Error(
