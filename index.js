@@ -3,22 +3,14 @@ const limitedMap = require("limited-map");
 const query = require("micro-query");
 const cors = require("micro-cors")();
 const { FileTileSet, S3TileSet } = require("./tileset");
-//const hat = require('hat');
 const crypto = require('crypto');
 const keys = require('./keys.js');
 
 const cacheSize = process.env.TILE_SET_CACHE || 128;
 const tileFolder = process.env.TILE_SET_PATH || __dirname;
-const maxPostSize = process.env.MAX_POST_SIZE || "1000kb";
+const maxPostSize = process.env.MAX_POST_SIZE || "5000kb";
 const maxParallelProcessing = 500;
 const allKeys = keys.get();
-
-// var rack = hat.rack();
-// var key = rack();
-// var key = 'your-key-goes-here';
-// const shasum = crypto.createHash('sha256');
-// shasum.update(key);
-// console.log(shasum.digest('hex'));
 
 const tiles = tileFolder.startsWith("s3://")
   ? new S3TileSet({ cacheSize })

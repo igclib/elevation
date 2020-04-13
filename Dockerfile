@@ -1,13 +1,13 @@
 FROM node:10
 
+
 COPY . /app
-COPY /etc/keys.js /app/keys.js
 WORKDIR /app
 RUN yarn install
 
 ENV TILE_SET_CACHE 128
 ENV TILE_SET_PATH /app/data
-ENV MAX_POST_SIZE 1000kb
+ENV MAX_POST_SIZE 5000kb
 
 EXPOSE 4000
 
